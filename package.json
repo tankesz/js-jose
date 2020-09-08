@@ -18,8 +18,7 @@
   },
   "scripts": {
     "build": "grunt",
-    "lint": "eslint lib --fix",
-    "test": "jest"
+    "lint": "eslint lib --fix"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",

@@ -36,7 +36,7 @@ interface IWebCryptographer {
     getContentSignAlgorithm(): SignAlgorithm;
     setContentSignAlgorithm(algorithm: SignAlgorithm): void;
     createIV(): ArrayBufferView;
-    createCek(): PromiseLike<CryptoKey>;
+    createCek(twoOps?: boolean): PromiseLike<CryptoKey>;
     wrapCek(): PromiseLike<ArrayBuffer>;
     unwrapCek(): PromiseLike<ArrayBuffer>;
     encrypt(iv: Uint8Array, aad: Uint8Array, cek: CryptoKey | PromiseLike<CryptoKey>, plaintext: Uint8Array): PromiseLike<IEncryptionResult>;
@@ -135,7 +135,7 @@ interface IJoseJWS {
 interface IEncrypter {
     new(cryptographer: IWebCryptographer, pubkey: CryptoKey | PromiseLike<CryptoKey>): IEncrypter;
     addHeader(k: string, v: string): void;
-    encrypt(plaintext: string): PromiseLike<string>;
+    encrypt(plaintext: string, presetCEK?: PromiseLike<CryptoKey>): PromiseLike<string>;
 }
 
 interface IDecrypter {

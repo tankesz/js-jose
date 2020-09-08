@@ -6,9 +6,6 @@ module.exports = function (grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     run: {
-      jest: {
-        cmd: 'jest'
-      }
     },
 
     eslint: {
@@ -113,6 +110,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-karma-coveralls');
   grunt.loadNpmTasks('grunt-webpack');
 
-  grunt.registerTask('default', ['eslint', 'run:jest', 'webpack', 'karma:without_coverage']);
-  grunt.registerTask('with_coverage', ['eslint', 'run:jest', 'webpack', 'karma:with_coverage']);
+  grunt.registerTask('default', ['eslint', 'webpack', 'karma:without_coverage']);
+  grunt.registerTask('with_coverage', ['eslint', 'webpack', 'karma:with_coverage']);
 };
