@@ -136,6 +136,7 @@ interface IEncrypter {
     new(cryptographer: IWebCryptographer, pubkey: CryptoKey | PromiseLike<CryptoKey>): IEncrypter;
     addHeader(k: string, v: string): void;
     encrypt(plaintext: string, presetCEK?: PromiseLike<CryptoKey>): PromiseLike<string>;
+    encrypt(plaintext: Uint8Array, presetCEK?: PromiseLike<CryptoKey>): PromiseLike<string>;
 }
 
 interface IDecrypter {
