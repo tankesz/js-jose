@@ -111,7 +111,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _jose_jwe_webcryptographer__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./jose-jwe-webcryptographer */ "./lib/jose-jwe-webcryptographer.js");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "WebCryptographer", function() { return _jose_jwe_webcryptographer__WEBPACK_IMPORTED_MODULE_5__["WebCryptographer"]; });
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /* -
  * Copyright 2014 Square Inc.
@@ -325,9 +325,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  * @param keyPromise    Promise<CryptoKey>, either RSA or shared key
  */
 
-var Decrypter =
-/*#__PURE__*/
-function () {
+var Decrypter = /*#__PURE__*/function () {
   function Decrypter(cryptographer, keyPromise) {
     _classCallCheck(this, Decrypter);
 
@@ -446,9 +444,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  * @param keyPromise    Promise<CryptoKey>, either RSA or shared key
  */
 
-var Encrypter =
-/*#__PURE__*/
-function () {
+var Encrypter = /*#__PURE__*/function () {
   function Encrypter(cryptographer, keyPromise) {
     _classCallCheck(this, Encrypter);
 
@@ -479,21 +475,21 @@ function () {
     /**
      * Performs encryption.
      *
-     * @param plainText  utf-8 string
+     * @param uint8Array  Uint8Array
      * @return Promise<String>
      */
 
   }, {
     key: "encrypt",
-    value: function encrypt(plainText) {
+    value: function encrypt(uint8Array) {
       /**
        * Encrypts plainText with CEK.
        *
        * @param cekPromise  Promise<CryptoKey>
-       * @param plainText   string
+       * @param uint8Array   Uint8Array
        * @return Promise<json>
        */
-      var encryptPlainText = function encryptPlainText(cekPromise, plainText) {
+      var encryptPlainText = function encryptPlainText(cekPromise, uint8Array) {
         // Create header
         var headers = {};
 
@@ -508,8 +504,7 @@ function () {
         var iv = this.cryptographer.createIV(); // Create the AAD
 
         var aad = _jose_utils__WEBPACK_IMPORTED_MODULE_0__["arrayFromString"](jweProtectedHeader);
-        plainText = _jose_utils__WEBPACK_IMPORTED_MODULE_0__["arrayFromUtf8String"](plainText);
-        return this.cryptographer.encrypt(iv, aad, cekPromise, plainText).then(function (r) {
+        return this.cryptographer.encrypt(iv, aad, cekPromise, uint8Array).then(function (r) {
           r.header = jweProtectedHeader;
           r.iv = iv;
           return r;
@@ -535,7 +530,7 @@ function () {
       } // Cek allows us to encrypy the plain text
 
 
-      var encPromise = encryptPlainText.bind(this, cekPromise, plainText)(); // Once we have all the promises, we can base64 encode all the pieces.
+      var encPromise = encryptPlainText.bind(this, cekPromise, uint8Array)(); // Once we have all the promises, we can base64 encode all the pieces.
 
       return Promise.all([encryptedCek, encPromise]).then(function (all) {
         var encryptedCek = all[0];
@@ -543,6 +538,19 @@ function () {
         var base64UrlEncoder = new _jose_utils__WEBPACK_IMPORTED_MODULE_0__["Base64Url"]();
         return data.header + '.' + base64UrlEncoder.encodeArray(encryptedCek) + '.' + base64UrlEncoder.encodeArray(data.iv) + '.' + base64UrlEncoder.encodeArray(data.cipher) + '.' + base64UrlEncoder.encodeArray(data.tag);
       });
+    }
+    /**
+     * Performs plain text encryption.
+     *
+     * @param plainText  utf-8 string
+     * @return Promise<String>
+     */
+
+  }, {
+    key: "encryptPlainText",
+    value: function encryptPlainText(plainText) {
+      var uint8Array = _jose_utils__WEBPACK_IMPORTED_MODULE_0__["arrayFromUtf8String"](plainText);
+      return this.encrypt(uint8Array);
     }
   }]);
 
@@ -594,9 +602,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  * duplication or callback vs Promise based API issues.
  */
 
-var WebCryptographer =
-/*#__PURE__*/
-function () {
+var WebCryptographer = /*#__PURE__*/function () {
   function WebCryptographer() {
     _classCallCheck(this, WebCryptographer);
 
@@ -672,9 +678,14 @@ function () {
 
   }, {
     key: "createCek",
-    value: function createCek() {
+    value: function createCek(twoOps) {
       var hack = this.getCekWorkaround(this.content_encryption);
-      return _jose_core__WEBPACK_IMPORTED_MODULE_1__["Jose"].crypto.subtle.generateKey(hack.id, true, hack.enc_op);
+
+      if (twoOps === undefined) {
+        return _jose_core__WEBPACK_IMPORTED_MODULE_1__["Jose"].crypto.subtle.generateKey(hack.id, true, hack.enc_op);
+      } else {
+        return _jose_core__WEBPACK_IMPORTED_MODULE_1__["Jose"].crypto.subtle.generateKey(hack.id, true, hack.enc_op.concat(hack.dec_op));
+      }
     }
   }, {
     key: "wrapCek",
@@ -1410,9 +1421,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  * @author Patrizio Bruno <patrizio@desertconsulting.net>
  */
 
-var Signer =
-/*#__PURE__*/
-function () {
+var Signer = /*#__PURE__*/function () {
   function Signer(cryptographer) {
     _classCallCheck(this, Signer);
 
@@ -1617,9 +1626,7 @@ function () {
  * @constructor
  */
 
-var JWS =
-/*#__PURE__*/
-function () {
+var JWS = /*#__PURE__*/function () {
   function JWS(protectedHeader, header, payload, signature) {
     _classCallCheck(this, JWS);
 
@@ -1682,7 +1689,7 @@ function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Verifier", function() { return Verifier; });
 /* harmony import */ var _jose_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./jose-utils */ "./lib/jose-utils.js");
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -1718,9 +1725,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
  * @author Patrizio Bruno <patrizio@desertconsulting.net>
  */
 
-var Verifier =
-/*#__PURE__*/
-function () {
+var Verifier = /*#__PURE__*/function () {
   function Verifier(cryptographer, message, keyfinder) {
     _classCallCheck(this, Verifier);
 
@@ -2392,9 +2397,7 @@ var isCryptoKey = function isCryptoKey(rsaKey) {
 
   return false;
 };
-var Base64Url =
-/*#__PURE__*/
-function () {
+var Base64Url = /*#__PURE__*/function () {
   function Base64Url() {
     _classCallCheck(this, Base64Url);
   }
@@ -2515,8 +2518,9 @@ function toByteArray(b64) {
   var curByte = 0; // if there are placeholders, only get up to the last complete 4 chars
 
   var len = placeHoldersLen > 0 ? validLen - 4 : validLen;
+  var i;
 
-  for (var i = 0; i < len; i += 4) {
+  for (i = 0; i < len; i += 4) {
     tmp = revLookup[b64.charCodeAt(i)] << 18 | revLookup[b64.charCodeAt(i + 1)] << 12 | revLookup[b64.charCodeAt(i + 2)] << 6 | revLookup[b64.charCodeAt(i + 3)];
     arr[curByte++] = tmp >> 16 & 0xFF;
     arr[curByte++] = tmp >> 8 & 0xFF;
@@ -2591,7 +2595,7 @@ function fromByteArray(uint8) {
 /* WEBPACK VAR INJECTION */(function(global) {/*!
  * The buffer module from node.js, for the browser.
  *
- * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @author   Feross Aboukhadijeh <http://feross.org>
  * @license  MIT
  */
 
@@ -4452,6 +4456,7 @@ function isnan(val) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m;
   var eLen = nBytes * 8 - mLen - 1;
@@ -4565,7 +4570,7 @@ module.exports = Array.isArray || function (arr) {
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 var g; // This works in non-strict mode
 
