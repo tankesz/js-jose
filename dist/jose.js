@@ -476,12 +476,13 @@ var Encrypter = /*#__PURE__*/function () {
      * Performs encryption.
      *
      * @param uint8Array  Uint8Array
+     * @param presetCEK CryptoKey
      * @return Promise<String>
      */
 
   }, {
     key: "encrypt",
-    value: function encrypt(uint8Array) {
+    value: function encrypt(uint8Array, presetCEK) {
       /**
        * Encrypts plainText with CEK.
        *
@@ -519,8 +520,17 @@ var Encrypter = /*#__PURE__*/function () {
         cekPromise = Promise.resolve(this.keyPromise);
         encryptedCek = [];
       } else {
-        // Create a CEK key
-        cekPromise = this.cryptographer.createCek(); // Key & Cek allows us to create the encryptedCek
+        if (presetCEK === undefined) {
+          // Create a CEK key
+          console.debug('generating CEK');
+          cekPromise = this.cryptographer.createCek();
+          console.debug('cekPromise:' + cekPromise);
+        } else {
+          console.debug('using presetCEK');
+          cekPromise = presetCEK;
+          console.debug('cekPromise:' + cekPromise);
+        } // Key & Cek allows us to create the encryptedCek
+
 
         encryptedCek = Promise.all([this.keyPromise, cekPromise]).then(function (all) {
           var key = all[0];
@@ -543,14 +553,15 @@ var Encrypter = /*#__PURE__*/function () {
      * Performs plain text encryption.
      *
      * @param plainText  utf-8 string
+     * @param presetCEK CryptoKey
      * @return Promise<String>
      */
 
   }, {
     key: "encryptPlainText",
-    value: function encryptPlainText(plainText) {
+    value: function encryptPlainText(plainText, presetCEK) {
       var uint8Array = _jose_utils__WEBPACK_IMPORTED_MODULE_0__["arrayFromUtf8String"](plainText);
-      return this.encrypt(uint8Array);
+      return this.encrypt(uint8Array, presetCEK);
     }
   }]);
 
