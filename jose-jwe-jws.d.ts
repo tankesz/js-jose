@@ -141,7 +141,7 @@ interface IEncrypter {
 
 interface IDecrypter {
     new(cryptographer: IWebCryptographer, key: CryptoKey | PromiseLike<CryptoKey>): IDecrypter;
-    decrypt(ciphertext: string): PromiseLike<string>;
+    decrypt(ciphertext: string): PromiseLike<Uint8Array>;
 }
 
 interface IJoseJWE {
