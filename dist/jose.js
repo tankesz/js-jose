@@ -395,7 +395,7 @@ var Decrypter = /*#__PURE__*/function () {
 
 
       var plainTextPromise = this.cryptographer.decrypt(cekPromise, _jose_utils__WEBPACK_IMPORTED_MODULE_0__["arrayFromString"](parts[0]), this.base64UrlEncoder.decodeArray(parts[2]), this.base64UrlEncoder.decodeArray(parts[3]), this.base64UrlEncoder.decodeArray(parts[4]));
-      return plainTextPromise.then(_jose_utils__WEBPACK_IMPORTED_MODULE_0__["utf8StringFromArray"]);
+      return plainTextPromise;
     }
   }]);
 
