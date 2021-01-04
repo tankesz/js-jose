@@ -819,7 +819,7 @@ var WebCryptographer = /*#__PURE__*/function () {
 
         cekPromise.then(function (cek) {
           var encryptPromise = _jose_core__WEBPACK_IMPORTED_MODULE_1__["Jose"].crypto.subtle.encrypt(enc, cek, plainText);
-          return encryptPromise.then(function (cipherText) {
+          encryptPromise.then(function (cipherText) {
             encryptValuePromise = this.resolveEncryptValuePromise(cipherText, tagBytes);
           });
         });
