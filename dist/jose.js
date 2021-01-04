@@ -808,7 +808,8 @@ var WebCryptographer = /*#__PURE__*/function () {
           tagLength: tagBytes * 8
         };
         return cekPromise.then(function (cek) {
-          return _jose_core__WEBPACK_IMPORTED_MODULE_1__["Jose"].crypto.subtle.encrypt(enc, cek, plainText).then(function (cipherText) {
+          var encryptPromise = _jose_core__WEBPACK_IMPORTED_MODULE_1__["Jose"].crypto.subtle.encrypt(enc, cek, plainText);
+          return encryptPromise.then(function (cipherText) {
             var offset = cipherText.byteLength - tagBytes;
             return {
               cipher: cipherText.slice(0, offset),
