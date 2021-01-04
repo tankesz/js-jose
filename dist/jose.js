@@ -820,7 +820,13 @@ var WebCryptographer = /*#__PURE__*/function () {
         cekPromise.then(function (cek) {
           var encryptPromise = _jose_core__WEBPACK_IMPORTED_MODULE_1__["Jose"].crypto.subtle.encrypt(enc, cek, plainText);
           encryptPromise.then(function (cipherText) {
-            encryptValuePromise = this.resolveEncryptValuePromise(cipherText, tagBytes);
+            encryptValuePromise = new Promise(function (resolve, reject) {
+              var offset = cipherText.byteLength - tagBytes;
+              resolve({
+                cipher: cipherText.slice(0, offset),
+                tag: cipherText.slice(offset)
+              });
+            });
           });
         });
         return encryptValuePromise;
@@ -849,18 +855,6 @@ var WebCryptographer = /*#__PURE__*/function () {
           };
         });
       }
-    }
-  }, {
-    key: "resolveEncryptValuePromise",
-    value: function resolveEncryptValuePromise(cipherText, tagBytes) {
-      var encryptValuePromise = new Promise(function (resolve, reject) {
-        var offset = cipherText.byteLength - tagBytes;
-        resolve({
-          cipher: cipherText.slice(0, offset),
-          tag: cipherText.slice(offset)
-        });
-      });
-      return encryptValuePromise;
     }
     /**
      * Compares two Uint8Arrays in constant time.
