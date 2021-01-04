@@ -816,6 +816,8 @@ var WebCryptographer = /*#__PURE__*/function () {
               cipher: cipherText.slice(0, offset),
               tag: cipherText.slice(offset)
             };
+          }, function (text) {
+            throw new Error('TZ -- Promise rejected: ' + text);
           });
         });
         /*
