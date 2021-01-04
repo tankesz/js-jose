@@ -804,7 +804,7 @@ var WebCryptographer = /*#__PURE__*/function () {
         var tagBytes = config.auth.tagBytes;
         var enc = {
           name: config.id.name,
-          iv: this.iv(iv),
+          iv: iv,
           additionalData: aad,
           tagLength: tagBytes * 8
         };
