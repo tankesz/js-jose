@@ -505,7 +505,8 @@ var Encrypter = /*#__PURE__*/function () {
         var iv = this.cryptographer.createIV(); // Create the AAD
 
         var aad = _jose_utils__WEBPACK_IMPORTED_MODULE_0__["arrayFromString"](jweProtectedHeader);
-        return this.cryptographer.encrypt(iv, aad, cekPromise, uint8Array).then(function (r) {
+        var encryptPomise = this.cryptographer.encrypt(iv, aad, cekPromise, uint8Array);
+        return encryptPomise.then(function (r) {
           r.header = jweProtectedHeader;
           r.iv = iv;
           return r;
