@@ -807,29 +807,32 @@ var WebCryptographer = /*#__PURE__*/function () {
           additionalData: aad,
           tagLength: tagBytes * 8
         };
-        var encryptValuePromise;
-        /*
         return cekPromise.then(function (cek) {
-          var encryptPromise = Jose.crypto.subtle.encrypt(enc, cek, plainText);
+          var encryptPromise = _jose_core__WEBPACK_IMPORTED_MODULE_1__["Jose"].crypto.subtle.encrypt(enc, cek, plainText);
           return encryptPromise.then(function (cipherText) {
-            encryptValuePromise = this.resolveEncryptValuePromise(cipherText, tagBytes);
+            var offset = cipherText.byteLength - tagBytes;
+            return {
+              cipher: cipherText.slice(0, offset),
+              tag: cipherText.slice(offset)
+            };
           });
         });
-         */
-
-        cekPromise.then(function (cek) {
-          var encryptPromise = _jose_core__WEBPACK_IMPORTED_MODULE_1__["Jose"].crypto.subtle.encrypt(enc, cek, plainText);
+        /*
+        var encryptValuePromise;
+         cekPromise.then(function (cek) {
+          var encryptPromise = Jose.crypto.subtle.encrypt(enc, cek, plainText);
           encryptPromise.then(function (cipherText) {
-            encryptValuePromise = new Promise(function (resolve, reject) {
+            encryptValuePromise = new Promise((resolve, reject) => {
               var offset = cipherText.byteLength - tagBytes;
-              resolve({
+               resolve({
                 cipher: cipherText.slice(0, offset),
                 tag: cipherText.slice(offset)
               });
             });
           });
         });
-        return encryptValuePromise;
+         return encryptValuePromise;
+         */
       } else {
         var keys = this.splitKey(config, cekPromise, ['encrypt']);
         var macKeyPromise = keys[0];
