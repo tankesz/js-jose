@@ -804,7 +804,7 @@ var WebCryptographer = /*#__PURE__*/function () {
         var tagBytes = config.auth.tagBytes;
         var enc = {
           name: config.id.name,
-          iv: iv,
+          iv: this.sta(iv),
           additionalData: aad,
           tagLength: tagBytes * 8
         };
@@ -844,13 +844,13 @@ var WebCryptographer = /*#__PURE__*/function () {
         var cipherTextPromise = encKeyPromise.then(function (encKey) {
           var enc = {
             name: config.id.name,
-            iv: iv
+            iv: this.sta(iv)
           };
           return _jose_core__WEBPACK_IMPORTED_MODULE_1__["Jose"].crypto.subtle.encrypt(enc, encKey, plainText);
         }); // compute MAC
 
         var macPromise = cipherTextPromise.then(function (cipherText) {
-          return _this.truncatedMac(config, macKeyPromise, aad, iv, cipherText);
+          return _this.truncatedMac(config, macKeyPromise, aad, _this.sta(iv), cipherText);
         });
         return Promise.all([cipherTextPromise, macPromise]).then(function (all) {
           var cipherText = all[0];
@@ -861,6 +861,20 @@ var WebCryptographer = /*#__PURE__*/function () {
           };
         });
       }
+    } // string-to-arraybuffer
+
+  }, {
+    key: "sta",
+    value: function sta(data) {
+      var enc = new TextEncoder();
+      return enc.encode(data);
+    } // arraybuffer-to-string
+
+  }, {
+    key: "ats",
+    value: function ats(data) {
+      var enc = new TextDecoder();
+      return enc.decode(data);
     }
     /**
      * Compares two Uint8Arrays in constant time.
@@ -919,7 +933,7 @@ var WebCryptographer = /*#__PURE__*/function () {
       if (config.auth.aead) {
         var dec = {
           name: config.id.name,
-          iv: iv,
+          iv: this.sta(iv),
           additionalData: aad,
           tagLength: config.auth.tagBytes * 8
         };
@@ -932,14 +946,14 @@ var WebCryptographer = /*#__PURE__*/function () {
         var macKeyPromise = keys[0];
         var encKeyPromise = keys[1]; // Validate the MAC
 
-        var macPromise = this.truncatedMac(config, macKeyPromise, aad, iv, cipherText);
+        var macPromise = this.truncatedMac(config, macKeyPromise, aad, this.sta(iv), cipherText);
         return Promise.all([encKeyPromise, macPromise]).then(function (all) {
           var encKey = all[0];
           var mac = all[1];
           return _this2.compare(config, macKeyPromise, new Uint8Array(mac), tag).then(function () {
             var dec = {
               name: config.id.name,
-              iv: iv
+              iv: _this2.sta(iv)
             };
             return _jose_core__WEBPACK_IMPORTED_MODULE_1__["Jose"].crypto.subtle.decrypt(dec, encKey, cipherText);
           })["catch"](function () {
