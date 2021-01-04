@@ -807,16 +807,23 @@ var WebCryptographer = /*#__PURE__*/function () {
           additionalData: aad,
           tagLength: tagBytes * 8
         };
+        var encryptValuePromise;
+        /*
         return cekPromise.then(function (cek) {
-          var encryptPromise = _jose_core__WEBPACK_IMPORTED_MODULE_1__["Jose"].crypto.subtle.encrypt(enc, cek, plainText);
+          var encryptPromise = Jose.crypto.subtle.encrypt(enc, cek, plainText);
           return encryptPromise.then(function (cipherText) {
-            var offset = cipherText.byteLength - tagBytes;
-            return {
-              cipher: cipherText.slice(0, offset),
-              tag: cipherText.slice(offset)
-            };
+            encryptValuePromise = this.resolveEncryptValuePromise(cipherText, tagBytes);
           });
         });
+         */
+
+        cekPromise.then(function (cek) {
+          var encryptPromise = _jose_core__WEBPACK_IMPORTED_MODULE_1__["Jose"].crypto.subtle.encrypt(enc, cek, plainText);
+          return encryptPromise.then(function (cipherText) {
+            encryptValuePromise = this.resolveEncryptValuePromise(cipherText, tagBytes);
+          });
+        });
+        return encryptValuePromise;
       } else {
         var keys = this.splitKey(config, cekPromise, ['encrypt']);
         var macKeyPromise = keys[0];
@@ -842,6 +849,18 @@ var WebCryptographer = /*#__PURE__*/function () {
           };
         });
       }
+    }
+  }, {
+    key: "resolveEncryptValuePromise",
+    value: function resolveEncryptValuePromise(cipherText, tagBytes) {
+      var encryptValuePromise = new Promise(function (resolve, reject) {
+        var offset = cipherText.byteLength - tagBytes;
+        resolve({
+          cipher: cipherText.slice(0, offset),
+          tag: cipherText.slice(offset)
+        });
+      });
+      return encryptValuePromise;
     }
     /**
      * Compares two Uint8Arrays in constant time.
